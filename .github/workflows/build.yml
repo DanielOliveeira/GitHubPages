@@ -3,36 +3,22 @@ name: deploy
 on:
   push:
     branches:
-      - main  # Ou outra branch que você estiver utilizando
+      - main
 
 jobs:
   deploy:
-    runs-on: ubuntu-22.04  # Ou a versão que você preferir
+    runs-on: ubuntu-18.04
     steps:
       - uses: actions/checkout@v2
-
-      - uses: actions/setup-node@v3
+      - uses: actions/setup-node@v1
         with:
-          node-version: 'lts'
-
-      - name: Cache Node.js modules
-        uses: actions/cache@v3
-        with:
-          path: ~/.npm
-          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
-          restore-keys: |
-            ${{ runner.os }}-node-
-
-      - name: Install dependencies
-        run: npm ci  # Ou npm install, dependendo do seu fluxo
-
+          node-version: '14.x'
       - name: Build web-app
-        run: npm run build
-
+        run: |
+          npm ci
+          npm run build
       - name: Deploy to gh-pages
         uses: peaceiris/actions-gh-pages@v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./build  # Ou o diretório de build gerado
-          user_name: 'github-actions'  # Nome do usuário para o commit
-          user_email: 'github-actions@github.com'  # Email do usuário para o commit
+          publish_dir: ./build
